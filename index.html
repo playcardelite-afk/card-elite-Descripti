@@ -1,47 +1,53 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Card Elite | Streaming</title>
+<title>Card Elite | Streaming Premium</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
-header{height:68px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:#090909;position:sticky;top:0;z-index:10;border-bottom:1px solid #252525}
+body{margin:0;background:#090909;color:#fff;font-family:Arial,sans-serif}
+header{height:68px;background:#090909;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:10;border-bottom:1px solid #292929}
 .logo{font-size:25px;font-weight:900;letter-spacing:1px}
 .logo span{color:#e50914}
 button{cursor:pointer}
-.cart-btn{background:#e50914;color:white;border:0;padding:11px 16px;border-radius:5px;font-weight:bold}
-.hero{padding:65px 6%;min-height:280px;background:linear-gradient(90deg,#000 0%,#25090b 60%,#080808 100%)}
-.hero small{color:#e50914;font-weight:bold;letter-spacing:3px}
-.hero h1{font-size:clamp(35px,6vw,60px);margin:15px 0}
-.hero p{color:#ccc;max-width:500px;line-height:1.6}
-.search-area{padding:22px 5%}
-.search-area input{width:100%;max-width:400px;padding:13px 16px;border:1px solid #444;background:#171717;color:white;border-radius:5px;outline:none}
-#status{padding:5px 5% 15px;color:#aaa;font-size:13px}
+.cart-btn{background:#e50914;color:white;border:0;border-radius:5px;padding:11px 15px;font-weight:bold}
+.hero{min-height:290px;padding:55px 6%;background:linear-gradient(90deg,#080808 5%,#39080c 65%,#111 100%);display:flex;align-items:center}
+.hero small{color:#ff343e;letter-spacing:4px;font-weight:bold}
+.hero h1{font-size:clamp(36px,6vw,62px);margin:16px 0}
+.hero p{color:#ccc;max-width:480px;line-height:1.6}
+.search{padding:22px 5% 5px}
+.search input{width:100%;max-width:420px;padding:13px 16px;background:#181818;border:1px solid #444;color:white;border-radius:5px;outline:none}
+#status{padding:15px 5%;color:#aaa;font-size:13px}
 main{padding:0 5% 45px}
 .shelf{margin:25px 0 35px}
 .shelf h2{font-size:21px;margin:0 0 15px}
-.track{display:flex;gap:14px;overflow-x:auto;padding:3px 2px 17px;scroll-behavior:smooth}
+.track{display:flex;gap:15px;overflow-x:auto;padding:4px 3px 18px;scroll-behavior:smooth}
 .track::-webkit-scrollbar{height:5px}
 .track::-webkit-scrollbar-thumb{background:#555;border-radius:10px}
-.card{flex:0 0 195px;background:#171717;border-radius:7px;overflow:hidden;border:1px solid #292929;transition:.2s}
-.card:hover{transform:scale(1.035);border-color:#e50914}
-.poster{height:125px;background:linear-gradient(140deg,#4a080b,#151515);display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;font-size:24px;font-weight:900;color:white}
+.card{flex:0 0 190px;background:#171717;border-radius:7px;overflow:hidden;border:1px solid #292929;transition:.2s}
+.card:hover{transform:translateY(-5px);border-color:#e50914}
+.poster{height:245px;position:relative;overflow:hidden;padding:17px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(150deg,var(--c1),#080808 90%);isolation:isolate}
+.poster:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 75% 25%,var(--glow),transparent 50%);z-index:-1}
+.poster:after{content:"";position:absolute;width:160px;height:160px;border:1px solid #ffffff30;border-radius:50%;right:-60px;top:25px;box-shadow:0 0 30px var(--glow);z-index:-1}
+.poster .symbol{position:absolute;top:30px;left:15px;font-size:48px;font-weight:900;color:#ffffffb0}
+.poster strong{font-size:25px;line-height:1.05;text-shadow:0 3px 12px #000}
+.poster small{font-size:10px;letter-spacing:3px;margin-top:8px;color:#eee}
 .info{padding:13px}
-.info h3{font-size:15px;margin:0 0 8px;min-height:34px}
-.meta{font-size:12px;color:#aaa}
-.price{font-size:21px;color:#fff;font-weight:bold;margin:12px 0}
-.buy{width:100%;padding:11px;background:#e50914;color:white;border:0;border-radius:4px;font-weight:bold}
+.info h3{font-size:14px;margin:0 0 8px;min-height:33px}
+.meta{font-size:11px;color:#aaa}
+.price{font-size:21px;font-weight:bold;margin:12px 0}
+.buy{width:100%;border:0;border-radius:4px;background:#e50914;color:white;padding:11px;font-weight:bold}
 .buy:hover{background:#bd0610}
-#cartBox{display:none;position:fixed;inset:0;background:#000b;z-index:30;justify-content:flex-end}
+#cartBox{display:none;position:fixed;inset:0;background:#000c;z-index:30;justify-content:flex-end}
 #cartBox.open{display:flex}
-.panel{background:#171717;width:100%;max-width:420px;padding:22px;overflow:auto}
-.close{float:right;background:none;border:0;color:white;font-size:26px}
-.cart-item{padding:12px 0;border-bottom:1px solid #444}
-.cart-item button{background:#333;color:white;border:0;padding:5px 9px;margin-left:5px}
+.panel{width:100%;max-width:420px;background:#171717;padding:22px;overflow:auto}
+.close{float:right;border:0;background:none;color:white;font-size:27px}
+.cart-item{padding:13px 0;border-bottom:1px solid #444}
+.cart-item button{background:#333;border:0;color:white;padding:6px 11px;margin-right:5px}
 .total{font-size:22px;font-weight:bold;margin:22px 0}
-.checkout{width:100%;padding:14px;background:#e50914;color:white;border:0;border-radius:5px;font-weight:bold}
+.checkout{width:100%;padding:14px;border:0;border-radius:5px;background:#e50914;color:white;font-weight:bold}
 footer{text-align:center;padding:28px;color:#777;font-size:12px;border-top:1px solid #222}
 </style>
 </head>
@@ -53,16 +59,17 @@ footer{text-align:center;padding:28px;color:#777;font-size:12px;border-top:1px s
 </header>
 
 <section class="hero">
- <small>CARD ELITE ORIGINAL</small>
- <h1>Entretenimento<br>sem limites.</h1>
- <p>Encontre seus serviços de streaming favoritos em um só lugar.</p>
+ <div>
+  <small>CARD ELITE • STREAMING PREMIUM</small>
+  <h1>O melhor do<br>entretenimento.</h1>
+  <p>Escolha seu streaming favorito e aproveite. Seu próximo entretenimento está aqui.</p>
+ </div>
 </section>
 
-<div class="search-area">
- <input id="busca" placeholder="🔎 Buscar produto..." oninput="filtrar()">
+<div class="search">
+ <input id="busca" placeholder="🔎 Buscar Netflix, Disney, HBO..." oninput="filtrar()">
 </div>
-
-<div id="status">Carregando produtos...</div>
+<div id="status">Carregando catálogo...</div>
 <main id="catalogo"></main>
 
 <div id="cartBox" onclick="fecharFora(event)">
@@ -75,16 +82,30 @@ footer{text-align:center;padding:28px;color:#777;font-size:12px;border-top:1px s
  </div>
 </div>
 
-<footer>CARD ELITE © 2026 — Todos os direitos reservados</footer>
+<footer>CARD ELITE © 2026 • Entretenimento premium</footer>
 
 <script>
 let produtos=[];
 let carrinho=[];
 
-const catalogo=document.getElementById("catalogo");
+const temas={
+ "netflix":["#b20710","#320006","#ff1725","N"],
+ "claro":["#b20c20","#33000a","#ff354b","C+"],
+ "disney":["#092a68","#030b26","#2879ff","✦"],
+ "prime":["#006b85","#031c2b","#00caff","prime"],
+ "amazon":["#006b85","#031c2b","#00caff","prime"],
+ "hbo":["#501b8e","#130625","#b56aff","HBO"],
+ "apple":["#51515b","#09090d","#ddd","TV+"],
+ "universal":["#145b75","#03141c","#2bcaff","U+"],
+ "globo":["#087b68","#031c18","#1df5bd","G"],
+ "premiere":["#145f35","#031b0c","#36e77c","P"],
+ "telecine":["#76205a","#21091a","#ff55c8","T"]
+};
 
-function dinheiro(valor){
- return (valor/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function tema(p){
+ let s=(p.nome+" "+p.servico).toLowerCase();
+ let chave=Object.keys(temas).find(k=>s.includes(k));
+ return temas[chave]||["#63351a","#1c0d08","#ffad58","+"];
 }
 
 function categoria(p){
@@ -102,69 +123,77 @@ function categoria(p){
  return "Outros serviços";
 }
 
-function carregar(){
- fetch("/api/produtos")
- .then(r=>{
-  if(!r.ok)throw new Error("Erro ao consultar fornecedor");
-  return r.json();
- })
- .then(d=>{
-  produtos=Array.isArray(d)?d:(d.produtos||[]);
-  produtos=produtos.filter(p=>p.disponivel!==false);
+function dinheiro(v){
+ return (v/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+async function carregar(){
+ try{
+  let r=await fetch("/api/produtos");
+  if(!r.ok)throw new Error();
+  let d=await r.json();
+  produtos=(Array.isArray(d)?d:(d.produtos||[])).filter(p=>p.disponivel!==false);
   document.getElementById("status").textContent=produtos.length+" produtos disponíveis";
   renderizar(produtos);
- })
- .catch(e=>{
-  document.getElementById("status").textContent="Não foi possível carregar o catálogo. Atualize a página.";
- });
+ }catch(e){
+  document.getElementById("status").textContent="Não foi possível carregar os produtos. Atualize a página.";
+ }
 }
 
 function renderizar(lista){
- catalogo.innerHTML="";
- if(!lista.length){
-  catalogo.innerHTML='<p class="empty">Nenhum produto encontrado.</p>';
-  return;
- }
+ const area=document.getElementById("catalogo");
+ area.innerHTML="";
  let grupos={};
  lista.forEach(p=>{
   let c=categoria(p);
-  if(!grupos[c])grupos[c]=[];
-  grupos[c].push(p);
+  (grupos[c]??=[]).push(p);
  });
- Object.keys(grupos).forEach(nome=>{
+ Object.entries(grupos).forEach(([nome,items])=>{
   let section=document.createElement("section");
   section.className="shelf";
-  let titulo=document.createElement("h2");
-  titulo.textContent=nome;
+  let h=document.createElement("h2");
+  h.textContent=nome;
   let track=document.createElement("div");
   track.className="track";
-  grupos[nome].forEach(p=>{
+  items.forEach(p=>{
+   let [c1,c2,glow,symbol]=tema(p);
    let card=document.createElement("article");
    card.className="card";
    let poster=document.createElement("div");
    poster.className="poster";
-   poster.textContent=nome.toUpperCase();
+   poster.style.setProperty("--c1",c1);
+   poster.style.setProperty("--c2",c2);
+   poster.style.setProperty("--glow",glow);
+   let logo=document.createElement("div");
+   logo.className="symbol";
+   logo.textContent=symbol;
+   let titulo=document.createElement("strong");
+   titulo.textContent=categoria(p).toUpperCase();
+   let subtitulo=document.createElement("small");
+   subtitulo.textContent="CARD ELITE ORIGINAL";
+   poster.append(logo,titulo,subtitulo);
    let info=document.createElement("div");
    info.className="info";
-   let h=document.createElement("h3");
-   h.textContent=p.nome;
+   let nomeP=document.createElement("h3");
+   nomeP.textContent=p.nome;
    let meta=document.createElement("div");
    meta.className="meta";
    meta.textContent=(p.dias||30)+" dias • "+(p.entrega==="link"?"Entrega por link":"Entrega de conta");
-   let price=document.createElement("div");
-   price.className="price";
-   price.textContent=dinheiro(p.preco_centavos);
-   let btn=document.createElement("button");
-   btn.className="buy";
-   btn.textContent="Adicionar ao carrinho";
-   btn.onclick=()=>adicionar(p.id);
-   info.append(h,meta,price,btn);
+   let preco=document.createElement("div");
+   preco.className="price";
+   preco.textContent=dinheiro(p.preco_centavos);
+   let botao=document.createElement("button");
+   botao.className="buy";
+   botao.textContent="Adicionar ao carrinho";
+   botao.onclick=()=>adicionar(p.id);
+   info.append(nomeP,meta,preco,botao);
    card.append(poster,info);
    track.append(card);
   });
-  section.append(titulo,track);
-  catalogo.append(section);
+  section.append(h,track);
+  area.append(section);
  });
+ if(!lista.length)area.textContent="Nenhum produto encontrado.";
 }
 
 function filtrar(){
@@ -177,10 +206,7 @@ function adicionar(id){
  if(!p)return;
  let item=carrinho.find(x=>x.id===id);
  if(item){
-  if(item.quantidade>=p.max_quantidade){
-   alert("Limite máximo deste produto atingido.");
-   return;
-  }
+  if(item.quantidade>=(p.max_quantidade||10))return alert("Limite máximo atingido.");
   item.quantidade++;
  }else{
   carrinho.push({id:p.id,nome:p.nome,preco:p.preco_centavos,quantidade:1,max:p.max_quantidade||10});
@@ -189,8 +215,7 @@ function adicionar(id){
 }
 
 function atualizarCarrinho(){
- let quantidade=carrinho.reduce((s,x)=>s+x.quantidade,0);
- document.getElementById("count").textContent=quantidade;
+ document.getElementById("count").textContent=carrinho.reduce((s,x)=>s+x.quantidade,0);
  let total=carrinho.reduce((s,x)=>s+x.preco*x.quantidade,0);
  document.getElementById("total").textContent="Total: "+dinheiro(total);
  let area=document.getElementById("itens");
@@ -234,9 +259,9 @@ function finalizar(){
  let resumo=carrinho.map(x=>x.nome+" x"+x.quantidade+" - "+dinheiro(x.preco*x.quantidade)).join("\n");
  let total=carrinho.reduce((s,x)=>s+x.preco*x.quantidade,0);
  let mensagem="Olá! Quero fazer este pedido na Card Elite:\n"+resumo+"\nTotal: "+dinheiro(total);
- let telefone=""; // Coloque aqui o WhatsApp comercial com DDI e DDD
+ const telefone=""; // Configure seu WhatsApp comercial com DDI e DDD.
  if(!telefone){
-  alert("O catálogo e o carrinho estão funcionando. Para enviar o pedido, configure o WhatsApp comercial no código.");
+  alert("Carrinho pronto! Configure o WhatsApp comercial para receber os pedidos.");
   return;
  }
  window.open("https://wa.me/"+telefone+"?text="+encodeURIComponent(mensagem),"_blank");

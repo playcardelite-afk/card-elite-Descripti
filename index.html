@@ -51,7 +51,8 @@ overflow:hidden;border:1px solid #252525;transition:.2s;cursor:pointer}
 .logo-box{height:112px;display:flex;align-items:center;
 justify-content:center;padding:18px;background:linear-gradient(145deg,#202020,#090909)}
 .logo-box img{width:100%;height:75px;object-fit:contain}
-.logo-fallback{font-size:36px;font-weight:900;color:#ed101c}
+.logo-fallback{font-size:36px;font-weight:900;color:#ed101c;text-align:center}
+.logo-fallback.brand-name{font-size:18px}
 .product-info{padding:12px}
 .product-info h3{font-size:14px;min-height:34px}
 .price{color:#19d47b;font-weight:bold;margin:8px 0;font-size:17px}
@@ -161,29 +162,39 @@ const API='/api/produtos';
 let products=[];
 let cart=[];
 
-const brands={
- netflix:['Netflix','https://cdn.simpleicons.org/netflix/E50914'],
- prime:['Prime Video','https://cdn.simpleicons.org/primevideo/00A8E1'],
- disney:['Disney+','https://cdn.simpleicons.org/disneyplus/FFFFFF'],
- max:['Max','https://cdn.simpleicons.org/hbo/FFFFFF'],
- hbo:['HBO Max','https://cdn.simpleicons.org/hbo/FFFFFF'],
- spotify:['Spotify','https://cdn.simpleicons.org/spotify/1DB954'],
- youtube:['YouTube','https://cdn.simpleicons.org/youtube/FF0000'],
- crunchyroll:['Crunchyroll','https://cdn.simpleicons.org/crunchyroll/F47521'],
- globoplay:['Globoplay','https://cdn.simpleicons.org/globoplay/FFFFFF'],
- xbox:['Xbox','https://cdn.simpleicons.org/xbox/107C10'],
- playstation:['PlayStation','https://cdn.simpleicons.org/playstation/FFFFFF'],
- minecraft:['Minecraft','https://cdn.simpleicons.org/minecraft/62A54C'],
- fortnite:['Fortnite','https://cdn.simpleicons.org/fortnite/FFFFFF'],
- roblox:['Roblox','https://cdn.simpleicons.org/roblox/FFFFFF'],
- canva:['Canva','https://cdn.simpleicons.org/canva/00C4CC'],
- adobe:['Adobe','https://cdn.simpleicons.org/adobe/FF0000'],
- office:['Microsoft 365','https://cdn.simpleicons.org/microsoftoffice/D83B01'],
- chatgpt:['ChatGPT','https://cdn.simpleicons.org/openai/FFFFFF'],
- google:['Google','https://cdn.simpleicons.org/google/FFFFFF'],
- icloud:['iCloud','https://cdn.simpleicons.org/icloud/FFFFFF'],
- nordvpn:['NordVPN','https://cdn.simpleicons.org/nordvpn/4687FF']
-};
+/* Marcas: o nome do produto identifica a marca e puxa o logo correto */
+const brands=[
+ {re:/netflix/,label:'Netflix',slug:'netflix',color:'E50914'},
+ {re:/disney/,label:'Disney+',slug:'disneyplus',color:'FFFFFF'},
+ {re:/prime|amazon/,label:'Prime Video',slug:'primevideo',color:'00A8E1'},
+ {re:/\bhbo\b|\bmax\b/,label:'HBO Max',slug:'hbo',color:'FFFFFF'},
+ {re:/spotify/,label:'Spotify',slug:'spotify',color:'1DB954'},
+ {re:/youtube/,label:'YouTube',slug:'youtube',color:'FF0000'},
+ {re:/crunchyroll/,label:'Crunchyroll',slug:'crunchyroll',color:'F47521'},
+ {re:/globoplay|globo/,label:'Globoplay',slug:'globoplay',color:'FFFFFF'},
+ {re:/xbox/,label:'Xbox',slug:'xbox',color:'107C10'},
+ {re:/playstation|\bps[345]?\b/,label:'PlayStation',slug:'playstation',color:'FFFFFF'},
+ {re:/minecraft/,label:'Minecraft',slug:'minecraft',color:'62A54C'},
+ {re:/fortnite/,label:'Fortnite',slug:'fortnite',color:'FFFFFF'},
+ {re:/roblox/,label:'Roblox',slug:'roblox',color:'FFFFFF'},
+ {re:/canva/,label:'Canva',slug:'canva',color:'00C4CC'},
+ {re:/adobe/,label:'Adobe',slug:'adobe',color:'FF0000'},
+ {re:/office|microsoft/,label:'Microsoft 365',slug:'microsoftoffice',color:'D83B01'},
+ {re:/chatgpt|openai/,label:'ChatGPT',slug:'openai',color:'FFFFFF'},
+ {re:/icloud/,label:'iCloud',slug:'icloud',color:'FFFFFF'},
+ {re:/nordvpn/,label:'NordVPN',slug:'nordvpn',color:'4687FF'}
+];
+
+function norm(s){
+ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+}
+function findBrand(text){
+ const t=norm(text);
+ return brands.find(b=>b.re.test(t));
+}
+function logoUrl(b){
+ return 'https://cdn.simpleicons.org/'+b.slug+'/'+b.color;
+}
 
 function getName(p){
  return p.name || p.nome || p.title || p.titulo ||
@@ -208,44 +219,48 @@ function money(v){
  return Number.isFinite(n)?n.toLocaleString('pt-BR',
  {style:'currency',currency:'BRL'}):String(v);
 }
-function brandLogo(name){
- const key=Object.keys(brands).find(k=>name.toLowerCase().includes(k));
- return key?brands[key][1]:'';
-}
 function classify(p){
- const s=(getName(p)+' '+getCategory(p)).toLowerCase();
- if(/netflix|disney|prime video|amazon prime|hbo|max|globoplay|spotify|crunchyroll|youtube|paramount|streaming/.test(s))return 'streaming';
+ const s=norm(getName(p)+' '+getCategory(p));
+ if(/netflix|disney|prime video|amazon prime|\bhbo\b|\bmax\b|globoplay|spotify|crunchyroll|youtube|paramount|streaming/.test(s))return 'streaming';
  if(/game|jogo|xbox|playstation|roblox|minecraft|fortnite|free fire|nintendo|steam/.test(s))return 'jogos';
- if(/app|canva|adobe|office|microsoft|chatgpt|google|icloud|vpn/.test(s))return 'apps';
+ if(/\bapp\b|canva|adobe|office|microsoft|chatgpt|google|icloud|vpn/.test(s))return 'apps';
  return 'outros';
 }
+
 function makeCard(p){
  const name=getName(p);
- const image=getImage(p);
- const logo=brandLogo(name);
+ const brand=findBrand(name+' '+getCategory(p));
+ /* Ordem: logo da marca -> imagem da API -> texto */
+ const sources=[brand?logoUrl(brand):'', getImage(p)].filter(Boolean);
  const price=money(getPrice(p));
  const idx=products.indexOf(p);
  const card=document.createElement('article');
  card.className='product';
  const box=document.createElement('div');
  box.className='logo-box';
- const img=document.createElement('img');
- img.alt=name;
- img.src=image || logo || '';
- img.onerror=()=>{
-  img.remove();
-  const fallback=document.createElement('div');
-  fallback.className='logo-fallback';
-  fallback.textContent=name.substring(0,2).toUpperCase();
-  box.appendChild(fallback);
- };
- if(!img.src){
-  img.remove();
-  const fallback=document.createElement('div');
-  fallback.className='logo-fallback';
-  fallback.textContent=name.substring(0,2).toUpperCase();
-  box.appendChild(fallback);
- }else box.appendChild(img);
+
+ function showFallback(){
+  box.replaceChildren();
+  const f=document.createElement('div');
+  f.className='logo-fallback'+(brand?' brand-name':'');
+  f.textContent=brand?brand.label:name.substring(0,2).toUpperCase();
+  box.appendChild(f);
+ }
+
+ if(!sources.length){
+  showFallback();
+ }else{
+  let i=0;
+  const img=document.createElement('img');
+  img.alt=name;
+  img.onerror=()=>{
+   i++;
+   if(i<sources.length)img.src=sources[i];
+   else showFallback();
+  };
+  img.src=sources[0];
+  box.appendChild(img);
+ }
 
  const info=document.createElement('div');
  info.className='product-info';
@@ -261,6 +276,7 @@ function makeCard(p){
  card.append(box,info);
  return card;
 }
+
 function render(list=products){
  const groups={
   streaming:document.getElementById('streaming-list'),
@@ -282,6 +298,7 @@ function render(list=products){
   }
  });
 }
+
 async function loadProducts(){
  try{
   const response=await fetch(API,{headers:{'Accept':'application/json'}});
@@ -306,6 +323,7 @@ async function loadProducts(){
   });
  }
 }
+
 function addCart(index){
  const p=products[index];
  if(!p)return;
@@ -320,10 +338,12 @@ function showCart(){
  }
  alert('Produtos selecionados:\n'+cart.map(p=>getName(p)).join('\n'));
 }
+
 document.getElementById('search').addEventListener('input',e=>{
- const q=e.target.value.toLowerCase().trim();
- render(products.filter(p=>getName(p).toLowerCase().includes(q)));
+ const q=norm(e.target.value).trim();
+ render(products.filter(p=>norm(getName(p)).includes(q)));
 });
+
 loadProducts();
 </script>
 </body>

@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#080808">
 <title>Card Elite | Streaming, Jogos e Apps</title>
 
+<script>
+/* Mostra na tela qualquer erro de JavaScript (ajuda a achar problemas no celular) */
+window.addEventListener('error',function(e){
+ var s=document.getElementById('status');
+ if(s)s.textContent='Erro no site: '+e.message;
+});
+</script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#080808;color:#fff;font-family:Arial,sans-serif;font-size:14px}
@@ -28,7 +36,7 @@ color:#fff;font-weight:bold;cursor:pointer;white-space:nowrap}
 .chip{flex:0 0 auto;background:#1c1c1c;border:1px solid #333;color:#ddd;
 border-radius:18px;padding:7px 14px;font-size:13px;cursor:pointer}
 .chip.on{background:#ed101c;border-color:#ed101c;color:#fff;font-weight:bold}
-#status{padding:0 12px 6px;color:#888;font-size:11px}
+#status{padding:0 12px 6px;color:#888;font-size:11px;word-break:break-word}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:4px 12px 22px}
 @media(min-width:600px){
 .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
@@ -39,15 +47,16 @@ padding:7px;display:flex;flex-direction:column;gap:6px}
 .tile{aspect-ratio:1;border-radius:9px;position:relative;overflow:hidden;
 display:flex;align-items:center;justify-content:center;
 container-type:inline-size;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-.tile:before{content:"";position:absolute;inset:0;
+.tile .bgimg{position:absolute;left:-10%;top:-10%;width:120%;height:120%;
+object-fit:cover;filter:blur(14px) brightness(.55)}
+.tile .fg{position:relative;width:100%;height:100%;object-fit:contain}
+.tile .shine{position:absolute;inset:0;
 background:radial-gradient(circle at 25% 15%,rgba(255,255,255,.22),transparent 55%)}
-.tile img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .mark{position:relative;font-weight:900;text-align:center;line-height:1.05;
 letter-spacing:-.02em;padding:0 6%;word-break:break-word}
 .tags{position:absolute;left:5%;right:5%;bottom:6%;display:flex;
 flex-wrap:wrap;justify-content:center;gap:3px}
-.tag{font-size:8px;font-weight:bold;padding:2px 5px;border-radius:8px;
-white-space:nowrap}
+.tag{font-size:8px;font-weight:bold;padding:2px 5px;border-radius:8px;white-space:nowrap}
 .tag.more{background:rgba(0,0,0,.45);color:#fff}
 .product h3{font-size:12px;line-height:1.25;min-height:45px;
 display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -57,6 +66,8 @@ display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hi
 color:#fff;border-radius:6px;font-weight:bold;font-size:12px;cursor:pointer}
 .product button:active{background:#bd0710}
 .empty{grid-column:1/-1;padding:30px;text-align:center;color:#aaa}
+.empty button{margin-top:12px;background:#ed101c;color:#fff;border:0;
+border-radius:8px;padding:10px 18px;font-weight:bold;cursor:pointer}
 footer{background:#120506;border-top:1px solid #333;padding:14px 12px;
 display:flex;justify-content:center;gap:6px 16px;flex-wrap:wrap;
 color:#bbb;font-size:12px}
@@ -105,64 +116,27 @@ transition:.25s;z-index:20;max-width:90%;text-align:center}
 <div id="toast"></div>
 
 <script>
-const API='/api/produtos';
-let products=[];
-let cart=[];
-let cat='todos';
-let query='';
+var API='/api/produtos';
+var DEBUG=/[?&]debug/.test(location.search);
+var products=[];
+var cart=[];
+var cat='todos';
+var query='';
 
-/* key, regex, nome na capa, cor 1, cor 2, cor do texto */
-const brands=[
- ['claro',/claro/,'Claro tv+','#E30613','#8E0009','#fff'],
- ['netflix',/netflix/,'NETFLIX','#1c1c1c','#000','#E50914'],
- ['disney',/disney/,'Disney+','#1B4BE0','#0A1F7A','#fff'],
- ['prime',/prime video|prime|amazon/,'prime video','#00A8E1','#0A6D94','#fff'],
- ['hbo',/\bhbo\b|\bmax\b/,'HBO Max','#6A2BD9','#2E0F6B','#fff'],
- ['paramount',/paramount/,'Paramount+','#0064FF','#003C99','#fff'],
- ['premiere',/premiere/,'Premiere','#0FA653','#06592B','#fff'],
- ['telecine',/telecine/,'Telecine','#D6001C','#7A000F','#fff'],
- ['globoplay',/globoplay|globo/,'globoplay','#F0412C','#A3140B','#fff'],
- ['spotify',/spotify/,'Spotify','#1DB954','#0F6B30','#fff'],
- ['youtube',/youtube/,'YouTube','#FF0000','#990000','#fff'],
- ['crunchyroll',/crunchyroll/,'Crunchyroll','#F47521','#A34A0D','#fff'],
- ['xbox',/xbox/,'XBOX','#107C10','#0A4A0A','#fff'],
- ['playstation',/playstation|\bps[345]?\b/,'PlayStation','#0A47B8','#031F55','#fff'],
- ['minecraft',/minecraft/,'MINECRAFT','#62A54C','#2F5A22','#fff'],
- ['fortnite',/fortnite/,'FORTNITE','#5B3BD0','#2A1670','#fff'],
- ['roblox',/roblox/,'ROBLOX','#E2231A','#8A130D','#fff'],
- ['canva',/canva/,'Canva','#00C4CC','#7B2FF7','#fff'],
- ['adobe',/adobe/,'Adobe','#E1251B','#7A0F0A','#fff'],
- ['office',/office|microsoft/,'Microsoft 365','#D83B01','#7A2000','#fff'],
- ['chatgpt',/chatgpt|openai/,'ChatGPT','#10A37F','#085A45','#fff'],
- ['icloud',/icloud/,'iCloud','#3693F3','#1B4F94','#fff'],
- ['nordvpn',/nordvpn/,'NordVPN','#4687FF','#1D3F8F','#fff']
-].map(a=>({key:a[0],re:a[1],label:a[2],c1:a[3],c2:a[4],fg:a[5]}));
-
-function norm(s){
- return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-}
-function getName(p){
- return p.name || p.nome || p.title || p.titulo ||
- p.product || p.produto || p.description || p.descricao || 'Produto';
-}
-function getImage(p){
- return p.image || p.imagem || p.image_url || p.imageUrl ||
- p.logo || p.icon || p.icone || p.thumbnail ||
- p.picture || p.photo || p.foto || p.url_imagem || '';
-}
-function getPrice(p){
- return p.price ?? p.preco ?? p.valor ?? p.sale_price ?? p.preco_venda;
-}
-function getCategory(p){
- return String(p.category || p.categoria || p.type || p.tipo || '').toLowerCase();
-}
-function money(v){
- if(v===undefined || v===null || v==='')return 'Consulte';
- if(typeof v==='string' && /R\$/.test(v))return v;
- let n=Number(String(v).replace(',','.'));
- return Number.isFinite(n)?n.toLocaleString('pt-BR',
- {style:'currency',currency:'BRL'}):String(v);
-}
-function classify(p){
- const s=norm(getName(p)+' '+getCategory(p));
- if(/netflix|disney|prime video|amazon prime|\bhbo\b|\bmax\b|globoplay|spotify|crunchyroll|youtube|paramount|premiere|telecine|claro|streaming/.test(s
+/* chave, regex, nome na capa, cor 1, cor 2, cor do texto, etiqueta */
+var brands=[
+ ['claro',/claro/,'Claro tv+','#E30613','#8E0009','#fff','Claro tv+'],
+ ['netflix',/netflix/,'NETFLIX','#1c1c1c','#000','#E50914','Netflix'],
+ ['disney',/disney/,'Disney+','#1B4BE0','#0A1F7A','#fff','Disney+'],
+ ['prime',/prime video|prime|amazon/,'prime video','#00A8E1','#0A6D94','#fff','Prime Video'],
+ ['hbo',/\bhbo\b|\bmax\b/,'HBO Max','#6A2BD9','#2E0F6B','#fff','HBO Max'],
+ ['paramount',/paramount/,'Paramount+','#0064FF','#003C99','#fff','Paramount+'],
+ ['premiere',/premiere/,'Premiere','#0FA653','#06592B','#fff','Premiere'],
+ ['telecine',/telecine/,'Telecine','#D6001C','#7A000F','#fff','Telecine'],
+ ['globoplay',/globoplay|globo/,'globoplay','#F0412C','#A3140B','#fff','Globoplay'],
+ ['spotify',/spotify/,'Spotify','#1DB954','#0F6B30','#fff','Spotify'],
+ ['youtube',/youtube/,'YouTube','#FF0000','#990000','#fff','YouTube'],
+ ['crunchyroll',/crunchyroll/,'Crunchyroll','#F47521','#A34A0D','#fff','Crunchyroll'],
+ ['xbox',/xbox/,'XBOX','#107C10','#0A4A0A','#fff','Xbox'],
+ ['playstation',/playstation|\bps[345]?\b/,'PlayStation','#0A47B8','#031F55','#fff','PlayStation'],
+ ['minecraft',/minecraft/,'MINECRAFT','#62A54C','#2F5A22','#fff','Minecraft'],

@@ -44,18 +44,19 @@ border-radius:18px;padding:7px 14px;font-size:13px;cursor:pointer}
 }
 .product{background:#141414;border:1px solid #242424;border-radius:12px;
 padding:7px;display:flex;flex-direction:column;gap:6px}
-.tile{aspect-ratio:1;border-radius:9px;position:relative;overflow:hidden;
+.tile{aspect-ratio:4/5;border-radius:9px;position:relative;overflow:hidden;
 display:flex;align-items:center;justify-content:center;
 container-type:inline-size;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 .tile .bgimg{position:absolute;left:-10%;top:-10%;width:120%;height:120%;
 object-fit:cover;filter:blur(14px) brightness(.55)}
 .tile .fg{position:relative;width:100%;height:100%;object-fit:contain}
 .tile .logo{position:relative;width:68%;height:68%;object-fit:contain}
+.tile .cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
 .tile .shine{position:absolute;inset:0;
 background:radial-gradient(circle at 25% 15%,rgba(255,255,255,.22),transparent 55%)}
 .mark{position:relative;font-weight:900;text-align:center;line-height:1.05;
 letter-spacing:-.02em;padding:0 6%;word-break:break-word}
-.tags{position:absolute;left:5%;right:5%;bottom:6%;display:flex;
+.tags{position:absolute;z-index:2;left:5%;right:5%;bottom:6%;display:flex;
 flex-wrap:wrap;justify-content:center;gap:3px}
 .tag{font-size:8px;font-weight:bold;padding:2px 5px;border-radius:8px;white-space:nowrap}
 .tag.more{background:rgba(0,0,0,.45);color:#fff}
@@ -364,6 +365,10 @@ function applyImage(tile,art,img,mode){
   bg.src=img.src;
   img.className='fg';
   tile.append(bg,img);
+ }else if(mode==='cover'){
+  if(art.mark)art.mark.style.display='none';
+  img.className='cover';
+  tile.appendChild(img);
  }else{
   if(art.mark)art.mark.style.display='none';
   img.className='logo';
@@ -378,7 +383,7 @@ function loadImg(url,mode,tile,art,onfail){
  im.onerror=onfail;
  im.src=url;
 }
-/* Ordem: foto da API -> arquivo em /logos -> ícone online -> capa colorida */
+/* Ordem: foto da API -> capa em /logos -> ícone online -> capa colorida */
 function makeTile(p){
  var name=getName(p);
  var tile=document.createElement('div');
@@ -396,7 +401,7 @@ function makeTile(p){
  }
  function stage2(){
   findFirst(slugs,function(u){
-   if(u)loadImg(u,'logo',tile,art,stage3);else stage3();
+   if(u)loadImg(u,'cover',tile,art,stage3);else stage3();
   });
  }
  var api=getImage(p);
@@ -535,3 +540,4 @@ document.getElementById('search').addEventListener('input',function(e){
 loadProducts();
 </script>
 </body>
+</html>

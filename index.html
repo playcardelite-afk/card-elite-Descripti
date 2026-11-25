@@ -50,6 +50,7 @@ container-type:inline-size;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 .tile .bgimg{position:absolute;left:-10%;top:-10%;width:120%;height:120%;
 object-fit:cover;filter:blur(14px) brightness(.55)}
 .tile .fg{position:relative;width:100%;height:100%;object-fit:contain}
+.tile .logo{position:relative;width:68%;height:68%;object-fit:contain}
 .tile .shine{position:absolute;inset:0;
 background:radial-gradient(circle at 25% 15%,rgba(255,255,255,.22),transparent 55%)}
 .mark{position:relative;font-weight:900;text-align:center;line-height:1.05;
@@ -61,7 +62,9 @@ flex-wrap:wrap;justify-content:center;gap:3px}
 .product h3{font-size:12px;line-height:1.25;min-height:45px;
 display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .price{color:#19d47b;font-weight:bold;font-size:13px}
-.ok{font-size:10px;color:#8fd9b0}
+.ok{font-size:10px;color:#8fd9b0;min-height:12px}
+.product.off{opacity:.55}
+.product button:disabled{background:#444;color:#aaa;cursor:not-allowed}
 .product button{width:100%;background:#ed101c;border:0;padding:8px;
 color:#fff;border-radius:6px;font-weight:bold;font-size:12px;cursor:pointer}
 .product button:active{background:#bd0710}
@@ -123,33 +126,35 @@ var cart=[];
 var cat='todos';
 var query='';
 
-/* chave, regex, nome na capa, cor 1, cor 2, cor do texto, etiqueta */
+/* chave, regex, nome na capa, cor 1, cor 2, cor do texto, etiqueta, ícone online */
 var brands=[
- ['claro',/claro/,'Claro tv+','#E30613','#8E0009','#fff','Claro tv+'],
- ['netflix',/netflix/,'NETFLIX','#1c1c1c','#000','#E50914','Netflix'],
- ['disney',/disney/,'Disney+','#1B4BE0','#0A1F7A','#fff','Disney+'],
- ['prime',/prime video|prime|amazon/,'prime video','#00A8E1','#0A6D94','#fff','Prime Video'],
- ['hbo',/\bhbo\b|\bmax\b/,'HBO Max','#6A2BD9','#2E0F6B','#fff','HBO Max'],
- ['paramount',/paramount/,'Paramount+','#0064FF','#003C99','#fff','Paramount+'],
- ['premiere',/premiere/,'Premiere','#0FA653','#06592B','#fff','Premiere'],
- ['telecine',/telecine/,'Telecine','#D6001C','#7A000F','#fff','Telecine'],
- ['globoplay',/globoplay|globo/,'globoplay','#F0412C','#A3140B','#fff','Globoplay'],
- ['spotify',/spotify/,'Spotify','#1DB954','#0F6B30','#fff','Spotify'],
- ['youtube',/youtube/,'YouTube','#FF0000','#990000','#fff','YouTube'],
- ['crunchyroll',/crunchyroll/,'Crunchyroll','#F47521','#A34A0D','#fff','Crunchyroll'],
- ['xbox',/xbox/,'XBOX','#107C10','#0A4A0A','#fff','Xbox'],
- ['playstation',/playstation|\bps[345]?\b/,'PlayStation','#0A47B8','#031F55','#fff','PlayStation'],
- ['minecraft',/minecraft/,'MINECRAFT','#62A54C','#2F5A22','#fff','Minecraft'],
- ['fortnite',/fortnite/,'FORTNITE','#5B3BD0','#2A1670','#fff','Fortnite'],
- ['roblox',/roblox/,'ROBLOX','#E2231A','#8A130D','#fff','Roblox'],
- ['canva',/canva/,'Canva','#00C4CC','#7B2FF7','#fff','Canva'],
- ['adobe',/adobe/,'Adobe','#E1251B','#7A0F0A','#fff','Adobe'],
- ['office',/office|microsoft/,'Microsoft 365','#D83B01','#7A2000','#fff','Microsoft 365'],
- ['chatgpt',/chatgpt|openai/,'ChatGPT','#10A37F','#085A45','#fff','ChatGPT'],
- ['icloud',/icloud/,'iCloud','#3693F3','#1B4F94','#fff','iCloud'],
- ['nordvpn',/nordvpn/,'NordVPN','#4687FF','#1D3F8F','#fff','NordVPN']
+ ['claro',/claro/,'Claro tv+','#E30613','#8E0009','#fff','Claro tv+',''],
+ ['netflix',/netflix/,'NETFLIX','#1c1c1c','#000','#E50914','Netflix','netflix'],
+ ['disney',/disney/,'Disney+','#1B4BE0','#0A1F7A','#fff','Disney+','disneyplus'],
+ ['prime',/prime video|prime|amazon/,'prime video','#00A8E1','#0A6D94','#fff','Prime Video','primevideo'],
+ ['hbo',/\bhbo\b|\bmax\b/,'HBO Max','#6A2BD9','#2E0F6B','#fff','HBO Max','hbo'],
+ ['paramount',/paramount/,'Paramount+','#0064FF','#003C99','#fff','Paramount+','paramountplus'],
+ ['premiere',/premiere/,'Premiere','#0FA653','#06592B','#fff','Premiere',''],
+ ['telecine',/telecine/,'Telecine','#D6001C','#7A000F','#fff','Telecine',''],
+ ['globoplay',/globoplay|globo/,'globoplay','#F0412C','#A3140B','#fff','Globoplay',''],
+ ['apple',/apple/,'Apple TV+','#2B2B2E','#000','#fff','Apple TV+','appletv'],
+ ['universal',/universal/,'Universal+','#1D3F8F','#0A1A45','#fff','Universal+',''],
+ ['spotify',/spotify/,'Spotify','#1DB954','#0F6B30','#fff','Spotify','spotify'],
+ ['youtube',/youtube/,'YouTube','#FF0000','#990000','#fff','YouTube','youtube'],
+ ['crunchyroll',/crunchyroll/,'Crunchyroll','#F47521','#A34A0D','#fff','Crunchyroll','crunchyroll'],
+ ['xbox',/xbox/,'XBOX','#107C10','#0A4A0A','#fff','Xbox','xbox'],
+ ['playstation',/playstation|\bps[345]?\b/,'PlayStation','#0A47B8','#031F55','#fff','PlayStation','playstation'],
+ ['minecraft',/minecraft/,'MINECRAFT','#62A54C','#2F5A22','#fff','Minecraft','minecraft'],
+ ['fortnite',/fortnite/,'FORTNITE','#5B3BD0','#2A1670','#fff','Fortnite',''],
+ ['roblox',/roblox/,'ROBLOX','#E2231A','#8A130D','#fff','Roblox','roblox'],
+ ['canva',/canva/,'Canva','#00C4CC','#7B2FF7','#fff','Canva','canva'],
+ ['adobe',/adobe/,'Adobe','#E1251B','#7A0F0A','#fff','Adobe','adobe'],
+ ['office',/office|microsoft/,'Microsoft 365','#D83B01','#7A2000','#fff','Microsoft 365',''],
+ ['chatgpt',/chatgpt|openai/,'ChatGPT','#10A37F','#085A45','#fff','ChatGPT',''],
+ ['icloud',/icloud/,'iCloud','#3693F3','#1B4F94','#fff','iCloud','icloud'],
+ ['nordvpn',/nordvpn/,'NordVPN','#4687FF','#1D3F8F','#fff','NordVPN','nordvpn']
 ].map(function(a){
- return {key:a[0],re:a[1],label:a[2],c1:a[3],c2:a[4],fg:a[5],tag:a[6]};
+ return {key:a[0],re:a[1],label:a[2],c1:a[3],c2:a[4],fg:a[5],tag:a[6],si:a[7]};
 });
 
 function norm(s){
@@ -160,7 +165,9 @@ function getName(p){
  p.product || p.produto || p.description || p.descricao || 'Produto';
 }
 
-/* ---------- FOTO ORIGINAL DO PRODUTO ---------- */
+/* ---------- FOTO / LOGO ---------- */
+var LOGO_DIR='/logos/';
+var EXTS=['png','webp','jpg','svg'];
 var IMG_KEYS=['image','imagem','image_url','imageUrl','img','imagem_url',
  'url_imagem','foto','photo','picture','thumbnail','thumb','cover','capa',
  'banner','poster','logo','icon','icone','images','imagens','fotos'];
@@ -192,19 +199,78 @@ function getImage(p){
  }
  return '';
 }
+function slugify(s){
+ return norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+function getService(p){
+ return p.servico || p.service || p.slug || '';
+}
 
-/* ---------- PREÇO ---------- */
+/* Procura /logos/<nome>.png|webp|jpg|svg (cada nome é testado uma vez só) */
+var logoCache={};
+function findLogo(slug,cb){
+ var c=logoCache[slug];
+ if(c!==undefined){
+  if(Array.isArray(c))c.push(cb);else cb(c);
+  return;
+ }
+ logoCache[slug]=[cb];
+ var i=0;
+ (function next(){
+  if(i>=EXTS.length){
+   var w=logoCache[slug];
+   logoCache[slug]='';
+   w.forEach(function(f){f('');});
+   return;
+  }
+  var url=LOGO_DIR+slug+'.'+EXTS[i];
+  var im=new Image();
+  im.onload=function(){
+   var w=logoCache[slug];
+   logoCache[slug]=url;
+   w.forEach(function(f){f(url);});
+  };
+  im.onerror=function(){i++;next();};
+  im.src=url;
+ })();
+}
+function findFirst(slugs,cb){
+ if(!slugs.length){cb('');return;}
+ findLogo(slugs[0],function(u){
+  if(u)cb(u);else findFirst(slugs.slice(1),cb);
+ });
+}
+
+/* ---------- PREÇO / DADOS ---------- */
 var PRICE_KEYS=['price','preco','preço','valor','sale_price','preco_venda',
  'precoVenda','valor_venda','price_brl','amount','value'];
 function getPrice(p){
- for(var i=0;i<PRICE_KEYS.length;i++){
-  var v=p[PRICE_KEYS[i]];
+ var k,i,v;
+ for(k in p){
+  if(/centavos|cents/i.test(k)&&p[k]!==null&&p[k]!==''&&isFinite(Number(p[k])))
+   return Number(p[k])/100;
+ }
+ for(i=0;i<PRICE_KEYS.length;i++){
+  v=p[PRICE_KEYS[i]];
   if(v!==undefined&&v!==null&&v!=='')return v;
  }
  return undefined;
 }
 function getCategory(p){
  return String(p.category || p.categoria || p.type || p.tipo || '').toLowerCase();
+}
+function isAvail(p){
+ var d=p.disponivel;
+ return !(d===false||d===0||d==='0'||d==='false'||d==='nao'||d==='não');
+}
+function metaOf(p){
+ var a=[];
+ if(p.dias!==undefined&&p.dias!==null&&p.dias!=='')a.push(p.dias+' dias');
+ if(typeof p.entrega==='string'&&p.entrega&&p.entrega.length<24){
+  var e=p.entrega.replace(/_/g,' ');
+  a.push(e.charAt(0).toUpperCase()+e.slice(1));
+ }
+ return a.join(' · ');
 }
 function money(v){
  if(v===undefined || v===null || v==='')return 'Consulte';
@@ -214,8 +280,8 @@ function money(v){
  {style:'currency',currency:'BRL'}):String(v);
 }
 function classify(p){
- var s=norm(getName(p)+' '+getCategory(p));
- if(/netflix|disney|prime video|amazon prime|\bhbo\b|\bmax\b|globoplay|spotify|crunchyroll|youtube|paramount|premiere|telecine|claro|streaming/.test(s))return 'streaming';
+ var s=norm(getName(p)+' '+getService(p)+' '+getCategory(p));
+ if(/netflix|disney|prime video|amazon prime|\bhbo\b|\bmax\b|globoplay|spotify|crunchyroll|youtube|paramount|premiere|telecine|claro|apple tv|universal|streaming/.test(s))return 'streaming';
  if(/game|jogo|xbox|playstation|roblox|minecraft|fortnite|free fire|nintendo|steam/.test(s))return 'jogos';
  if(/\bapp\b|canva|adobe|office|microsoft|chatgpt|google|icloud|vpn/.test(s))return 'apps';
  return 'outros';
@@ -234,6 +300,7 @@ function fitMark(el,label,max){
 }
 /* Arte de reserva: cor da marca (ou cor gerada) com o nome do produto */
 function drawArt(tile,name){
+ var res={main:null,mark:null,tags:null};
  var t=norm(name);
  var found=brands.filter(function(b){return b.re.test(t);});
  var claro=found.filter(function(b){return b.key==='claro';})[0];
@@ -252,7 +319,8 @@ function drawArt(tile,name){
   m.style.color='#fff';
   fitMark(m,label,22);
   tile.append(shine,m);
-  return;
+  res.mark=m;
+  return res;
  }
  tile.style.background='linear-gradient(145deg,'+main.c1+','+main.c2+')';
  m.textContent=main.label;
@@ -278,38 +346,70 @@ function drawArt(tile,name){
    tags.appendChild(more);
   }
   tile.appendChild(tags);
+  res.tags=tags;
+ }
+ res.main=main;
+ res.mark=m;
+ return res;
+}
+function hex6(c){return c==='#fff'?'FFFFFF':c.replace('#','');}
+
+function applyImage(tile,art,img,mode){
+ if(mode==='photo'){
+  tile.replaceChildren();
+  tile.style.background='#151515';
+  var bg=document.createElement('img');
+  bg.className='bgimg';
+  bg.alt='';
+  bg.src=img.src;
+  img.className='fg';
+  tile.append(bg,img);
+ }else{
+  if(art.mark)art.mark.style.display='none';
+  img.className='logo';
+  if(art.tags)img.style.cssText+=';height:52%;width:70%;margin-bottom:16%';
+  tile.appendChild(img);
  }
 }
-/* Primeiro tenta a foto original; se falhar, fica a arte de reserva */
-function makeTile(name,image){
+function loadImg(url,mode,tile,art,onfail){
+ var im=new Image();
+ im.alt='';
+ im.onload=function(){applyImage(tile,art,im,mode);};
+ im.onerror=onfail;
+ im.src=url;
+}
+/* Ordem: foto da API -> arquivo em /logos -> ícone online -> capa colorida */
+function makeTile(p){
+ var name=getName(p);
  var tile=document.createElement('div');
  tile.className='tile';
- drawArt(tile,name);
- if(image){
-  var im=new Image();
-  im.referrerPolicy='no-referrer';
-  im.alt=name;
-  im.onload=function(){
-   tile.replaceChildren();
-   tile.style.background='#151515';
-   var bg=document.createElement('img');
-   bg.className='bgimg';
-   bg.alt='';
-   bg.referrerPolicy='no-referrer';
-   bg.src=image;
-   im.className='fg';
-   tile.append(bg,im);
-  };
-  im.src=image;
+ var art=drawArt(tile,name);
+ var slugs=[];
+ var sv=getService(p);
+ if(sv)slugs.push(slugify(sv));
+ if(art.main&&slugs.indexOf(art.main.key)<0)slugs.push(art.main.key);
+ function stage3(){
+  if(art.main&&art.main.si){
+   loadImg('https://cdn.simpleicons.org/'+art.main.si+'/'+hex6(art.main.fg),
+    'logo',tile,art,function(){});
+  }
  }
+ function stage2(){
+  findFirst(slugs,function(u){
+   if(u)loadImg(u,'logo',tile,art,stage3);else stage3();
+  });
+ }
+ var api=getImage(p);
+ if(api)loadImg(api,'photo',tile,art,stage2);else stage2();
  return tile;
 }
 
 function makeCard(p){
  var name=getName(p);
  var idx=products.indexOf(p);
+ var avail=isAvail(p);
  var card=document.createElement('article');
- card.className='product';
+ card.className='product'+(avail?'':' off');
  var title=document.createElement('h3');
  title.textContent=name;
  var value=document.createElement('div');
@@ -317,11 +417,16 @@ function makeCard(p){
  value.textContent=money(getPrice(p));
  var ok=document.createElement('div');
  ok.className='ok';
- ok.textContent='✓ Ativação imediata';
+ ok.textContent=metaOf(p);
  var btn=document.createElement('button');
- btn.textContent='Selecionar';
- btn.onclick=function(){addCart(idx);};
- card.append(makeTile(name,getImage(p)),title,value,ok,btn);
+ if(avail){
+  btn.textContent='Selecionar';
+  btn.onclick=function(){addCart(idx);};
+ }else{
+  btn.textContent='Indisponível';
+  btn.disabled=true;
+ }
+ card.append(makeTile(p),title,value,ok,btn);
  return card;
 }
 
@@ -375,8 +480,7 @@ async function loadProducts(){
   }else{
    status.textContent=products.length+' produtos disponíveis';
    if(DEBUG){
-    status.textContent+=' | campos: '+Object.keys(products[0]).join(', ')+
-     ' | imagem: '+(getImage(products[0])||'nenhuma');
+    status.textContent+=' | exemplo: '+JSON.stringify(products[0]);
    }
   }
   render();
@@ -406,7 +510,14 @@ function showCart(){
   toast('Sua seleção está vazia.');
   return;
  }
- alert('Produtos selecionados:\n'+cart.map(function(p){return getName(p);}).join('\n'));
+ var total=0,hasAll=true;
+ var lines=cart.map(function(p){
+  var v=getPrice(p);
+  var n=Number(v);
+  if(v===undefined||!Number.isFinite(n))hasAll=false;else total+=n;
+  return getName(p)+' - '+money(v);
+ });
+ alert('Produtos selecionados:\n'+lines.join('\n')+(hasAll?'\n\nTotal: '+money(total):''));
 }
 
 document.getElementById('chips').addEventListener('click',function(e){
@@ -424,4 +535,3 @@ document.getElementById('search').addEventListener('input',function(e){
 loadProducts();
 </script>
 </body>
-</html>

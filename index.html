@@ -3,113 +3,479 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
 <title>Card Elite | Streaming Premium</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#090909;color:#fff;font-family:Arial,sans-serif}
-header{height:68px;background:#090909;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:10;border-bottom:1px solid #292929}
-.logo{font-size:25px;font-weight:900;letter-spacing:1px}
-.logo span{color:#e50914}
-button{cursor:pointer}
-.cart-btn{background:#e50914;color:white;border:0;border-radius:5px;padding:11px 15px;font-weight:bold}
-.hero{min-height:290px;padding:55px 6%;background:linear-gradient(90deg,#080808 5%,#39080c 65%,#111 100%);display:flex;align-items:center}
-.hero small{color:#ff343e;letter-spacing:4px;font-weight:bold}
-.hero h1{font-size:clamp(36px,6vw,62px);margin:16px 0}
-.hero p{color:#ccc;max-width:480px;line-height:1.6}
-.search{padding:22px 5% 5px}
-.search input{width:100%;max-width:420px;padding:13px 16px;background:#181818;border:1px solid #444;color:white;border-radius:5px;outline:none}
-#status{padding:15px 5%;color:#aaa;font-size:13px}
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+ --red:#e50914;
+ --bg:#080808;
+ --panel:#181818;
+ --muted:#aaa;
+}
+
+body{
+ background:var(--bg);
+ color:white;
+ font-family:Arial,Helvetica,sans-serif;
+ min-height:100vh;
+}
+
+button{cursor:pointer;font-family:inherit}
+
+header{
+ height:70px;
+ padding:0 5%;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:#090909;
+ border-bottom:1px solid #292929;
+ position:sticky;
+ top:0;
+ z-index:10;
+}
+
+.logo{
+ font-size:25px;
+ font-weight:900;
+ letter-spacing:1px;
+}
+
+.logo span{color:var(--red)}
+
+.header-right{
+ display:flex;
+ align-items:center;
+ gap:15px;
+}
+
+.cart-btn{
+ background:var(--red);
+ color:white;
+ border:0;
+ border-radius:5px;
+ padding:12px 16px;
+ font-weight:bold;
+}
+
+.hero{
+ min-height:330px;
+ padding:65px 6%;
+ display:flex;
+ align-items:center;
+ background:
+ linear-gradient(90deg,#080808 5%,#180506 55%,#080808 100%);
+ position:relative;
+ overflow:hidden;
+}
+
+.hero:after{
+ content:"";
+ position:absolute;
+ width:350px;
+ height:350px;
+ right:8%;
+ top:-30px;
+ border-radius:50%;
+ background:#b00012;
+ filter:blur(120px);
+ opacity:.25;
+}
+
+.hero-content{
+ position:relative;
+ z-index:1;
+ max-width:650px;
+}
+
+.hero-tag{
+ color:#ff414b;
+ font-size:12px;
+ letter-spacing:4px;
+ font-weight:bold;
+}
+
+.hero h1{
+ font-size:clamp(38px,7vw,65px);
+ line-height:1.05;
+ margin:18px 0;
+}
+
+.hero h1 span{color:var(--red)}
+
+.hero p{
+ color:#ccc;
+ line-height:1.7;
+ max-width:480px;
+}
+
+.hero-button{
+ display:inline-block;
+ margin-top:22px;
+ padding:13px 22px;
+ background:white;
+ color:black;
+ border:0;
+ border-radius:4px;
+ font-weight:bold;
+}
+
+.search-area{
+ padding:25px 5% 10px;
+}
+
+.search-area input{
+ width:100%;
+ max-width:430px;
+ padding:14px 17px;
+ background:#181818;
+ color:white;
+ border:1px solid #444;
+ border-radius:5px;
+ outline:none;
+ font-size:14px;
+}
+
+.search-area input:focus{
+ border-color:var(--red);
+}
+
+.status{
+ padding:12px 5%;
+ color:#aaa;
+ font-size:13px;
+}
+
 main{padding:0 5% 45px}
-.shelf{margin:25px 0 35px}
-.shelf h2{font-size:21px;margin:0 0 15px}
-.track{display:flex;gap:15px;overflow-x:auto;padding:4px 3px 18px;scroll-behavior:smooth}
+
+.shelf{margin:24px 0 35px}
+
+.shelf h2{
+ font-size:21px;
+ margin-bottom:15px;
+}
+
+.track{
+ display:flex;
+ gap:15px;
+ overflow-x:auto;
+ padding:5px 3px 18px;
+ scroll-behavior:smooth;
+}
+
 .track::-webkit-scrollbar{height:5px}
-.track::-webkit-scrollbar-thumb{background:#555;border-radius:10px}
-.card{flex:0 0 190px;background:#171717;border-radius:7px;overflow:hidden;border:1px solid #292929;transition:.2s}
-.card:hover{transform:translateY(-5px);border-color:#e50914}
-.poster{height:245px;position:relative;overflow:hidden;padding:17px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(150deg,var(--c1),#080808 90%);isolation:isolate}
-.poster:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 75% 25%,var(--glow),transparent 50%);z-index:-1}
-.poster:after{content:"";position:absolute;width:160px;height:160px;border:1px solid #ffffff30;border-radius:50%;right:-60px;top:25px;box-shadow:0 0 30px var(--glow);z-index:-1}
-.poster .symbol{position:absolute;top:30px;left:15px;font-size:48px;font-weight:900;color:#ffffffb0}
-.poster strong{font-size:25px;line-height:1.05;text-shadow:0 3px 12px #000}
-.poster small{font-size:10px;letter-spacing:3px;margin-top:8px;color:#eee}
+.track::-webkit-scrollbar-thumb{
+ background:#555;
+ border-radius:10px;
+}
+
+.card{
+ flex:0 0 190px;
+ background:#171717;
+ border-radius:7px;
+ overflow:hidden;
+ border:1px solid #292929;
+ transition:transform .25s,border-color .25s;
+}
+
+.card:hover{
+ transform:translateY(-5px);
+ border-color:#777;
+}
+
+.poster{
+ height:250px;
+ padding:17px;
+ position:relative;
+ overflow:hidden;
+ display:flex;
+ flex-direction:column;
+ justify-content:flex-end;
+ background:linear-gradient(145deg,#780710,#160000);
+ border-bottom:3px solid var(--red);
+}
+
+.poster:before{
+ content:"";
+ position:absolute;
+ width:180px;
+ height:180px;
+ border:2px solid #ffffff25;
+ border-radius:50%;
+ top:-65px;
+ right:-55px;
+ box-shadow:0 0 35px #ffffff20;
+}
+
+.poster:after{
+ content:"";
+ position:absolute;
+ width:140px;
+ height:140px;
+ background:#ffffff12;
+ transform:rotate(35deg);
+ top:55px;
+ left:-90px;
+}
+
+.poster .poster-label{
+ position:relative;
+ z-index:1;
+ font-size:25px;
+ line-height:1.05;
+ font-weight:900;
+ text-transform:uppercase;
+ text-shadow:0 3px 12px #000;
+ overflow-wrap:anywhere;
+}
+
+.poster .poster-sub{
+ position:relative;
+ z-index:1;
+ margin-top:9px;
+ font-size:10px;
+ letter-spacing:3px;
+ color:#ffffffc9;
+ text-transform:uppercase;
+}
+
+.poster.netflix{background:linear-gradient(145deg,#c90016,#250005)}
+.poster.claro{background:linear-gradient(145deg,#ed2525,#500707)}
+.poster.disney{background:linear-gradient(145deg,#102d77,#030b25)}
+.poster.prime{background:linear-gradient(145deg,#087da5,#061c38)}
+.poster.hbo{background:linear-gradient(145deg,#5823a9,#17042e)}
+.poster.apple{background:linear-gradient(145deg,#777,#171717)}
+.poster.globo{background:linear-gradient(145deg,#e68c17,#481d08)}
+.poster.premiere{background:linear-gradient(145deg,#157b49,#052b1a)}
+.poster.telecine{background:linear-gradient(145deg,#b52b36,#35080d)}
+.poster.universal{background:linear-gradient(145deg,#1855a5,#06142d)}
+
 .info{padding:13px}
-.info h3{font-size:14px;margin:0 0 8px;min-height:33px}
-.meta{font-size:11px;color:#aaa}
-.price{font-size:21px;font-weight:bold;margin:12px 0}
-.buy{width:100%;border:0;border-radius:4px;background:#e50914;color:white;padding:11px;font-weight:bold}
+
+.info h3{
+ font-size:14px;
+ line-height:1.35;
+ min-height:38px;
+ margin-bottom:7px;
+}
+
+.meta{
+ color:#aaa;
+ font-size:11px;
+ line-height:1.5;
+}
+
+.price{
+ font-size:21px;
+ font-weight:bold;
+ margin:13px 0;
+}
+
+.buy{
+ width:100%;
+ padding:12px 7px;
+ color:white;
+ background:var(--red);
+ border:0;
+ border-radius:4px;
+ font-size:12px;
+ font-weight:bold;
+}
+
 .buy:hover{background:#bd0610}
-#cartBox{display:none;position:fixed;inset:0;background:#000c;z-index:30;justify-content:flex-end}
+
+.empty{
+ padding:25px 0;
+ color:#aaa;
+}
+
+#cartBox{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:#000c;
+ z-index:30;
+ justify-content:flex-end;
+}
+
 #cartBox.open{display:flex}
-.panel{width:100%;max-width:420px;background:#171717;padding:22px;overflow:auto}
-.close{float:right;border:0;background:none;color:white;font-size:27px}
-.cart-item{padding:13px 0;border-bottom:1px solid #444}
-.cart-item button{background:#333;border:0;color:white;padding:6px 11px;margin-right:5px}
-.total{font-size:22px;font-weight:bold;margin:22px 0}
-.checkout{width:100%;padding:14px;border:0;border-radius:5px;background:#e50914;color:white;font-weight:bold}
-footer{text-align:center;padding:28px;color:#777;font-size:12px;border-top:1px solid #222}
+
+.panel{
+ width:100%;
+ max-width:430px;
+ height:100%;
+ overflow-y:auto;
+ background:#171717;
+ padding:23px;
+ box-shadow:-10px 0 35px #0008;
+}
+
+.panel-header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:25px;
+}
+
+.close{
+ color:white;
+ background:none;
+ border:0;
+ font-size:29px;
+}
+
+.cart-item{
+ padding:14px 0;
+ border-bottom:1px solid #383838;
+}
+
+.cart-item p{
+ color:#aaa;
+ font-size:13px;
+ margin:8px 0;
+}
+
+.quantity-controls{
+ display:flex;
+ align-items:center;
+ gap:10px;
+}
+
+.quantity-controls button{
+ background:#333;
+ color:white;
+ border:0;
+ padding:7px 12px;
+ border-radius:4px;
+}
+
+.total{
+ font-size:23px;
+ font-weight:bold;
+ margin:25px 0;
+}
+
+.checkout{
+ width:100%;
+ padding:15px;
+ border:0;
+ border-radius:5px;
+ background:#e50914;
+ color:white;
+ font-weight:bold;
+}
+
+.notice{
+ color:#aaa;
+ font-size:12px;
+ line-height:1.5;
+ margin-top:12px;
+}
+
+footer{
+ text-align:center;
+ padding:30px 15px;
+ border-top:1px solid #222;
+ color:#777;
+ font-size:12px;
+}
+
+@media(max-width:500px){
+ header{padding:0 4%}
+ .logo{font-size:21px}
+ .hero{min-height:280px;padding:45px 5%}
+ .card{flex-basis:165px}
+ .poster{height:220px}
+ .poster .poster-label{font-size:22px}
+ .shelf h2{font-size:19px}
+}
 </style>
 </head>
+
 <body>
 
 <header>
  <div class="logo">CARD <span>ELITE</span></div>
- <button class="cart-btn" onclick="abrirCarrinho()">🛒 Carrinho (<span id="count">0</span>)</button>
+ <div class="header-right">
+  <button class="cart-btn" onclick="abrirCarrinho()">
+   🛒 Carrinho (<span id="count">0</span>)
+  </button>
+ </div>
 </header>
 
 <section class="hero">
- <div>
-  <small>CARD ELITE • STREAMING PREMIUM</small>
-  <h1>O melhor do<br>entretenimento.</h1>
-  <p>Escolha seu streaming favorito e aproveite. Seu próximo entretenimento está aqui.</p>
+ <div class="hero-content">
+  <div class="hero-tag">CARD ELITE ORIGINAL</div>
+  <h1>SEU MUNDO.<br><span>SEU STREAMING.</span></h1>
+  <p>
+   Seus serviços favoritos de entretenimento em um só lugar.
+   Escolha seu produto e aproveite.
+  </p>
+  <button class="hero-button" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">
+   Explorar catálogo
+  </button>
  </div>
 </section>
 
-<div class="search">
- <input id="busca" placeholder="🔎 Buscar Netflix, Disney, HBO..." oninput="filtrar()">
+<div class="search-area">
+ <input
+  id="busca"
+  type="search"
+  placeholder="🔎 Buscar Netflix, Disney, HBO..."
+  oninput="filtrar()"
+ >
 </div>
-<div id="status">Carregando catálogo...</div>
+
+<div class="status" id="status">Carregando catálogo...</div>
+
 <main id="catalogo"></main>
 
 <div id="cartBox" onclick="fecharFora(event)">
  <div class="panel">
-  <button class="close" onclick="abrirCarrinho()">×</button>
-  <h2>Meu carrinho</h2>
+  <div class="panel-header">
+   <h2>Meu carrinho</h2>
+   <button class="close" onclick="abrirCarrinho()">×</button>
+  </div>
+
   <div id="itens"></div>
+
   <div class="total" id="total">Total: R$ 0,00</div>
-  <button class="checkout" onclick="finalizar()">Continuar pelo WhatsApp</button>
+
+  <button class="checkout" onclick="finalizar()">
+   CONTINUAR PELO WHATSAPP
+  </button>
+
+  <p class="notice">
+   O pedido será enviado para atendimento. O pagamento e a confirmação
+   precisam ser realizados antes da entrega.
+  </p>
  </div>
 </div>
 
-<footer>CARD ELITE © 2026 • Entretenimento premium</footer>
+<footer>
+ CARD ELITE © 2026 — Entretenimento premium
+</footer>
 
 <script>
 let produtos=[];
 let carrinho=[];
 
-const temas={
- "netflix":["#b20710","#320006","#ff1725","N"],
- "claro":["#b20c20","#33000a","#ff354b","C+"],
- "disney":["#092a68","#030b26","#2879ff","✦"],
- "prime":["#006b85","#031c2b","#00caff","prime"],
- "amazon":["#006b85","#031c2b","#00caff","prime"],
- "hbo":["#501b8e","#130625","#b56aff","HBO"],
- "apple":["#51515b","#09090d","#ddd","TV+"],
- "universal":["#145b75","#03141c","#2bcaff","U+"],
- "globo":["#087b68","#031c18","#1df5bd","G"],
- "premiere":["#145f35","#031b0c","#36e77c","P"],
- "telecine":["#76205a","#21091a","#ff55c8","T"]
-};
+const catalogo=document.getElementById("catalogo");
 
-function tema(p){
- let s=(p.nome+" "+p.servico).toLowerCase();
- let chave=Object.keys(temas).find(k=>s.includes(k));
- return temas[chave]||["#63351a","#1c0d08","#ffad58","+"];
+function dinheiro(valor){
+ return (Number(valor)/100).toLocaleString("pt-BR",{
+  style:"currency",
+  currency:"BRL"
+ });
 }
 
 function categoria(p){
- let s=(p.nome+" "+p.servico).toLowerCase();
+ const s=(p.nome+" "+p.servico).toLowerCase();
+
  if(s.includes("netflix"))return "Netflix";
  if(s.includes("claro"))return "Claro TV+";
  if(s.includes("disney"))return "Disney+";
@@ -120,154 +486,286 @@ function categoria(p){
  if(s.includes("premiere"))return "Premiere";
  if(s.includes("telecine"))return "Telecine";
  if(s.includes("universal"))return "Universal+";
+
  return "Outros serviços";
 }
 
-function dinheiro(v){
- return (v/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function estilo(p){
+ const s=(p.nome+" "+p.servico).toLowerCase();
+
+ if(s.includes("netflix"))return "netflix";
+ if(s.includes("claro"))return "claro";
+ if(s.includes("disney"))return "disney";
+ if(s.includes("amazon")||s.includes("prime"))return "prime";
+ if(s.includes("hbo"))return "hbo";
+ if(s.includes("apple"))return "apple";
+ if(s.includes("globo"))return "globo";
+ if(s.includes("premiere"))return "premiere";
+ if(s.includes("telecine"))return "telecine";
+ if(s.includes("universal"))return "universal";
+
+ return "";
+}
+
+function nomeCapa(p){
+ const s=(p.nome+" "+p.servico).toLowerCase();
+
+ if(s.includes("netflix"))return "NETFLIX";
+ if(s.includes("claro"))return "CLARO TV+";
+ if(s.includes("disney"))return "DISNEY+";
+ if(s.includes("amazon")||s.includes("prime"))return "PRIME VIDEO";
+ if(s.includes("hbo"))return "HBO MAX";
+ if(s.includes("apple"))return "APPLE TV+";
+ if(s.includes("globo"))return "GLOBOPLAY";
+ if(s.includes("premiere"))return "PREMIERE";
+ if(s.includes("telecine"))return "TELECINE";
+ if(s.includes("universal"))return "UNIVERSAL+";
+
+ return p.nome;
 }
 
 async function carregar(){
  try{
-  let r=await fetch("/api/produtos");
-  if(!r.ok)throw new Error();
-  let d=await r.json();
-  produtos=(Array.isArray(d)?d:(d.produtos||[])).filter(p=>p.disponivel!==false);
-  document.getElementById("status").textContent=produtos.length+" produtos disponíveis";
+  const resposta=await fetch("/api/produtos");
+
+  if(!resposta.ok)throw new Error("Erro "+resposta.status);
+
+  const dados=await resposta.json();
+
+  produtos=Array.isArray(dados)?dados:(dados.produtos||[]);
+  produtos=produtos.filter(p=>p.disponivel!==false);
+
+  document.getElementById("status").textContent=
+   produtos.length+" produtos disponíveis";
+
   renderizar(produtos);
- }catch(e){
-  document.getElementById("status").textContent="Não foi possível carregar os produtos. Atualize a página.";
+
+ }catch(erro){
+  document.getElementById("status").textContent=
+   "Não foi possível carregar os produtos. Atualize a página.";
+
+  catalogo.innerHTML=
+   '<p class="empty">Verifique a conexão com o fornecedor.</p>';
  }
 }
 
 function renderizar(lista){
- const area=document.getElementById("catalogo");
- area.innerHTML="";
- let grupos={};
+ catalogo.innerHTML="";
+
+ if(!lista.length){
+  catalogo.innerHTML='<p class="empty">Nenhum produto encontrado.</p>';
+  return;
+ }
+
+ const grupos={};
+
  lista.forEach(p=>{
-  let c=categoria(p);
-  (grupos[c]??=[]).push(p);
+  const nome=categoria(p);
+
+  if(!grupos[nome])grupos[nome]=[];
+
+  grupos[nome].push(p);
  });
+
  Object.entries(grupos).forEach(([nome,items])=>{
-  let section=document.createElement("section");
+  const section=document.createElement("section");
   section.className="shelf";
-  let h=document.createElement("h2");
-  h.textContent=nome;
-  let track=document.createElement("div");
+
+  const titulo=document.createElement("h2");
+  titulo.textContent=nome;
+
+  const track=document.createElement("div");
   track.className="track";
+
   items.forEach(p=>{
-   let [c1,c2,glow,symbol]=tema(p);
-   let card=document.createElement("article");
+   const card=document.createElement("article");
    card.className="card";
-   let poster=document.createElement("div");
-   poster.className="poster";
-   poster.style.setProperty("--c1",c1);
-   poster.style.setProperty("--c2",c2);
-   poster.style.setProperty("--glow",glow);
-   let logo=document.createElement("div");
-   logo.className="symbol";
-   logo.textContent=symbol;
-   let titulo=document.createElement("strong");
-   titulo.textContent=categoria(p).toUpperCase();
-   let subtitulo=document.createElement("small");
-   subtitulo.textContent="CARD ELITE ORIGINAL";
-   poster.append(logo,titulo,subtitulo);
-   let info=document.createElement("div");
+
+   const poster=document.createElement("div");
+   poster.className="poster "+estilo(p);
+
+   const label=document.createElement("span");
+   label.className="poster-label";
+   label.textContent=nomeCapa(p);
+
+   const sub=document.createElement("span");
+   sub.className="poster-sub";
+   sub.textContent="CARD ELITE ORIGINAL";
+
+   poster.append(label,sub);
+
+   const info=document.createElement("div");
    info.className="info";
-   let nomeP=document.createElement("h3");
-   nomeP.textContent=p.nome;
-   let meta=document.createElement("div");
+
+   const h=document.createElement("h3");
+   h.textContent=p.nome;
+
+   const meta=document.createElement("div");
    meta.className="meta";
-   meta.textContent=(p.dias||30)+" dias • "+(p.entrega==="link"?"Entrega por link":"Entrega de conta");
-   let preco=document.createElement("div");
-   preco.className="price";
-   preco.textContent=dinheiro(p.preco_centavos);
-   let botao=document.createElement("button");
-   botao.className="buy";
-   botao.textContent="Adicionar ao carrinho";
-   botao.onclick=()=>adicionar(p.id);
-   info.append(nomeP,meta,preco,botao);
+   meta.textContent=(p.dias||30)+" dias • "+
+    (p.entrega==="link"?"Entrega por link":"Entrega de conta");
+
+   const price=document.createElement("div");
+   price.className="price";
+   price.textContent=dinheiro(p.preco_centavos);
+
+   const btn=document.createElement("button");
+   btn.className="buy";
+   btn.textContent="ADICIONAR AO CARRINHO";
+   btn.onclick=()=>adicionar(p.id);
+
+   info.append(h,meta,price,btn);
    card.append(poster,info);
    track.append(card);
   });
-  section.append(h,track);
-  area.append(section);
+
+  section.append(titulo,track);
+  catalogo.append(section);
  });
- if(!lista.length)area.textContent="Nenhum produto encontrado.";
 }
 
 function filtrar(){
- let q=document.getElementById("busca").value.toLowerCase();
- renderizar(produtos.filter(p=>p.nome.toLowerCase().includes(q)));
+ const q=document.getElementById("busca").value.toLowerCase();
+
+ renderizar(produtos.filter(p=>
+  p.nome.toLowerCase().includes(q)||
+  p.servico.toLowerCase().includes(q)
+ ));
 }
 
 function adicionar(id){
- let p=produtos.find(x=>x.id===id);
+ const p=produtos.find(x=>x.id===id);
+
  if(!p)return;
- let item=carrinho.find(x=>x.id===id);
+
+ const item=carrinho.find(x=>x.id===id);
+ const limite=Number(p.max_quantidade)||10;
+
  if(item){
-  if(item.quantidade>=(p.max_quantidade||10))return alert("Limite máximo atingido.");
+  if(item.quantidade>=limite){
+   alert("Quantidade máxima disponível atingida.");
+   return;
+  }
   item.quantidade++;
  }else{
-  carrinho.push({id:p.id,nome:p.nome,preco:p.preco_centavos,quantidade:1,max:p.max_quantidade||10});
+  carrinho.push({
+   id:p.id,
+   nome:p.nome,
+   preco:Number(p.preco_centavos),
+   quantidade:1,
+   max:limite
+  });
  }
+
+ atualizarCarrinho();
+}
+
+function alterar(id,valor){
+ const item=carrinho.find(x=>x.id===id);
+
+ if(!item)return;
+
+ if(valor>0&&item.quantidade>=item.max){
+  alert("Quantidade máxima disponível atingida.");
+  return;
+ }
+
+ item.quantidade+=valor;
+
+ if(item.quantidade<=0){
+  carrinho=carrinho.filter(x=>x.id!==id);
+ }
+
  atualizarCarrinho();
 }
 
 function atualizarCarrinho(){
- document.getElementById("count").textContent=carrinho.reduce((s,x)=>s+x.quantidade,0);
- let total=carrinho.reduce((s,x)=>s+x.preco*x.quantidade,0);
+ const quantidade=carrinho.reduce((s,x)=>s+x.quantidade,0);
+ const total=carrinho.reduce((s,x)=>s+x.preco*x.quantidade,0);
+
+ document.getElementById("count").textContent=quantidade;
  document.getElementById("total").textContent="Total: "+dinheiro(total);
- let area=document.getElementById("itens");
+
+ const area=document.getElementById("itens");
  area.innerHTML="";
+
+ if(!carrinho.length){
+  area.innerHTML='<p class="empty">Seu carrinho está vazio.</p>';
+  return;
+ }
+
  carrinho.forEach(x=>{
-  let div=document.createElement("div");
+  const div=document.createElement("div");
   div.className="cart-item";
-  let nome=document.createElement("strong");
+
+  const nome=document.createElement("strong");
   nome.textContent=x.nome;
-  let linha=document.createElement("p");
-  linha.textContent=dinheiro(x.preco)+" × "+x.quantidade;
-  let menos=document.createElement("button");
+
+  const preco=document.createElement("p");
+  preco.textContent=dinheiro(x.preco)+" cada";
+
+  const controles=document.createElement("div");
+  controles.className="quantity-controls";
+
+  const menos=document.createElement("button");
   menos.textContent="−";
   menos.onclick=()=>alterar(x.id,-1);
-  let mais=document.createElement("button");
+
+  const qtd=document.createElement("span");
+  qtd.textContent=x.quantidade;
+
+  const mais=document.createElement("button");
   mais.textContent="+";
   mais.onclick=()=>alterar(x.id,1);
-  div.append(nome,linha,menos,mais);
+
+  controles.append(menos,qtd,mais);
+  div.append(nome,preco,controles);
   area.append(div);
  });
-}
-
-function alterar(id,n){
- let x=carrinho.find(i=>i.id===id);
- if(!x)return;
- if(n>0&&x.quantidade>=x.max)return alert("Limite máximo atingido.");
- x.quantidade+=n;
- if(x.quantidade<=0)carrinho=carrinho.filter(i=>i.id!==id);
- atualizarCarrinho();
 }
 
 function abrirCarrinho(){
  document.getElementById("cartBox").classList.toggle("open");
 }
+
 function fecharFora(e){
- if(e.target.id==="cartBox")abrirCarrinho();
+ if(e.target.id==="cartBox"){
+  abrirCarrinho();
+ }
 }
 
 function finalizar(){
- if(!carrinho.length)return alert("Seu carrinho está vazio.");
- let resumo=carrinho.map(x=>x.nome+" x"+x.quantidade+" - "+dinheiro(x.preco*x.quantidade)).join("\n");
- let total=carrinho.reduce((s,x)=>s+x.preco*x.quantidade,0);
- let mensagem="Olá! Quero fazer este pedido na Card Elite:\n"+resumo+"\nTotal: "+dinheiro(total);
- const telefone=""; // Configure seu WhatsApp comercial com DDI e DDD.
- if(!telefone){
-  alert("Carrinho pronto! Configure o WhatsApp comercial para receber os pedidos.");
+ if(!carrinho.length){
+  alert("Seu carrinho está vazio.");
   return;
  }
- window.open("https://wa.me/"+telefone+"?text="+encodeURIComponent(mensagem),"_blank");
+
+ const telefone="";
+
+ if(!telefone){
+  alert("O carrinho está funcionando! Falta configurar o número do WhatsApp comercial no código.");
+  return;
+ }
+
+ const resumo=carrinho.map(x=>
+  x.nome+" x"+x.quantidade+" - "+dinheiro(x.preco*x.quantidade)
+ ).join("\n");
+
+ const total=carrinho.reduce((s,x)=>s+x.preco*x.quantidade,0);
+
+ const mensagem=
+  "Olá! Quero fazer um pedido na Card Elite:\n"+
+  resumo+
+  "\nTotal: "+dinheiro(total);
+
+ window.open(
+  "https://wa.me/"+telefone+"?text="+encodeURIComponent(mensagem),
+  "_blank"
+ );
 }
 
 carregar();
 </script>
+
 </body>
 </html>

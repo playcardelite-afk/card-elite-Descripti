@@ -140,3 +140,288 @@ var brands=[
  ['xbox',/xbox/,'XBOX','#107C10','#0A4A0A','#fff','Xbox'],
  ['playstation',/playstation|\bps[345]?\b/,'PlayStation','#0A47B8','#031F55','#fff','PlayStation'],
  ['minecraft',/minecraft/,'MINECRAFT','#62A54C','#2F5A22','#fff','Minecraft'],
+ ['fortnite',/fortnite/,'FORTNITE','#5B3BD0','#2A1670','#fff','Fortnite'],
+ ['roblox',/roblox/,'ROBLOX','#E2231A','#8A130D','#fff','Roblox'],
+ ['canva',/canva/,'Canva','#00C4CC','#7B2FF7','#fff','Canva'],
+ ['adobe',/adobe/,'Adobe','#E1251B','#7A0F0A','#fff','Adobe'],
+ ['office',/office|microsoft/,'Microsoft 365','#D83B01','#7A2000','#fff','Microsoft 365'],
+ ['chatgpt',/chatgpt|openai/,'ChatGPT','#10A37F','#085A45','#fff','ChatGPT'],
+ ['icloud',/icloud/,'iCloud','#3693F3','#1B4F94','#fff','iCloud'],
+ ['nordvpn',/nordvpn/,'NordVPN','#4687FF','#1D3F8F','#fff','NordVPN']
+].map(function(a){
+ return {key:a[0],re:a[1],label:a[2],c1:a[3],c2:a[4],fg:a[5],tag:a[6]};
+});
+
+function norm(s){
+ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+}
+function getName(p){
+ return p.name || p.nome || p.title || p.titulo ||
+ p.product || p.produto || p.description || p.descricao || 'Produto';
+}
+
+/* ---------- FOTO ORIGINAL DO PRODUTO ---------- */
+var IMG_KEYS=['image','imagem','image_url','imageUrl','img','imagem_url',
+ 'url_imagem','foto','photo','picture','thumbnail','thumb','cover','capa',
+ 'banner','poster','logo','icon','icone','images','imagens','fotos'];
+
+function urlFrom(v){
+ if(!v)return '';
+ if(typeof v==='string')return v.trim();
+ if(Array.isArray(v))return urlFrom(v[0]);
+ if(typeof v==='object')return urlFrom(v.url||v.src||v.link||v.path||v.large||v.original);
+ return '';
+}
+function looksImg(s){
+ return /^data:image\//.test(s) || /\.(png|jpe?g|webp|gif|svg|avif)(\?|#|$)/i.test(s);
+}
+function fixUrl(s){
+ return /^\/\//.test(s)?'https:'+s:s;
+}
+function getImage(p){
+ var i,u,k;
+ for(i=0;i<IMG_KEYS.length;i++){
+  if(p[IMG_KEYS[i]]!==undefined){
+   u=urlFrom(p[IMG_KEYS[i]]);
+   if(u&&(/^(https?:|data:|\/|\.)/.test(u)||looksImg(u)))return fixUrl(u);
+  }
+ }
+ for(k in p){
+  u=urlFrom(p[k]);
+  if(u&&looksImg(u))return fixUrl(u);
+ }
+ return '';
+}
+
+/* ---------- PREÇO ---------- */
+var PRICE_KEYS=['price','preco','preço','valor','sale_price','preco_venda',
+ 'precoVenda','valor_venda','price_brl','amount','value'];
+function getPrice(p){
+ for(var i=0;i<PRICE_KEYS.length;i++){
+  var v=p[PRICE_KEYS[i]];
+  if(v!==undefined&&v!==null&&v!=='')return v;
+ }
+ return undefined;
+}
+function getCategory(p){
+ return String(p.category || p.categoria || p.type || p.tipo || '').toLowerCase();
+}
+function money(v){
+ if(v===undefined || v===null || v==='')return 'Consulte';
+ if(typeof v==='string' && /R\$/.test(v))return v;
+ var n=Number(String(v).replace(',','.'));
+ return Number.isFinite(n)?n.toLocaleString('pt-BR',
+ {style:'currency',currency:'BRL'}):String(v);
+}
+function classify(p){
+ var s=norm(getName(p)+' '+getCategory(p));
+ if(/netflix|disney|prime video|amazon prime|\bhbo\b|\bmax\b|globoplay|spotify|crunchyroll|youtube|paramount|premiere|telecine|claro|streaming/.test(s))return 'streaming';
+ if(/game|jogo|xbox|playstation|roblox|minecraft|fortnite|free fire|nintendo|steam/.test(s))return 'jogos';
+ if(/\bapp\b|canva|adobe|office|microsoft|chatgpt|google|icloud|vpn/.test(s))return 'apps';
+ return 'outros';
+}
+
+/* ---------- CAPA ---------- */
+function hashHue(s){
+ var h=0;
+ for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;
+ return h;
+}
+function fitMark(el,label,max){
+ var px=Math.max(11,Math.min(max,Math.floor(150/Math.max(label.length,5)*1.6)));
+ var cq=Math.max(8,Math.min(max*0.6,80/(label.length*0.62)));
+ el.style.cssText+=';font-size:'+px+'px;font-size:'+cq.toFixed(1)+'cqw';
+}
+/* Arte de reserva: cor da marca (ou cor gerada) com o nome do produto */
+function drawArt(tile,name){
+ var t=norm(name);
+ var found=brands.filter(function(b){return b.re.test(t);});
+ var claro=found.filter(function(b){return b.key==='claro';})[0];
+ var rest=found.filter(function(b){return b!==claro;});
+ var main=claro||rest[0];
+ var chips=claro?rest:rest.slice(1);
+ var m=document.createElement('div');
+ m.className='mark';
+ var shine=document.createElement('div');
+ shine.className='shine';
+ if(!main){
+  var h=hashHue(name);
+  tile.style.background='linear-gradient(145deg,hsl('+h+' 55% 34%),hsl('+h+' 55% 14%))';
+  var label=name.split(/\s+/).slice(0,2).join(' ');
+  m.textContent=label;
+  m.style.color='#fff';
+  fitMark(m,label,22);
+  tile.append(shine,m);
+  return;
+ }
+ tile.style.background='linear-gradient(145deg,'+main.c1+','+main.c2+')';
+ m.textContent=main.label;
+ m.style.color=main.fg;
+ fitMark(m,main.label,26);
+ if(chips.length)m.style.marginBottom='18%';
+ tile.append(shine,m);
+ if(chips.length){
+  var tags=document.createElement('div');
+  tags.className='tags';
+  chips.slice(0,3).forEach(function(c){
+   var s=document.createElement('span');
+   s.className='tag';
+   s.textContent=c.tag;
+   s.style.background=c.c1;
+   s.style.color=c.fg;
+   tags.appendChild(s);
+  });
+  if(chips.length>3){
+   var more=document.createElement('span');
+   more.className='tag more';
+   more.textContent='+'+(chips.length-3);
+   tags.appendChild(more);
+  }
+  tile.appendChild(tags);
+ }
+}
+/* Primeiro tenta a foto original; se falhar, fica a arte de reserva */
+function makeTile(name,image){
+ var tile=document.createElement('div');
+ tile.className='tile';
+ drawArt(tile,name);
+ if(image){
+  var im=new Image();
+  im.referrerPolicy='no-referrer';
+  im.alt=name;
+  im.onload=function(){
+   tile.replaceChildren();
+   tile.style.background='#151515';
+   var bg=document.createElement('img');
+   bg.className='bgimg';
+   bg.alt='';
+   bg.referrerPolicy='no-referrer';
+   bg.src=image;
+   im.className='fg';
+   tile.append(bg,im);
+  };
+  im.src=image;
+ }
+ return tile;
+}
+
+function makeCard(p){
+ var name=getName(p);
+ var idx=products.indexOf(p);
+ var card=document.createElement('article');
+ card.className='product';
+ var title=document.createElement('h3');
+ title.textContent=name;
+ var value=document.createElement('div');
+ value.className='price';
+ value.textContent=money(getPrice(p));
+ var ok=document.createElement('div');
+ ok.className='ok';
+ ok.textContent='✓ Ativação imediata';
+ var btn=document.createElement('button');
+ btn.textContent='Selecionar';
+ btn.onclick=function(){addCart(idx);};
+ card.append(makeTile(name,getImage(p)),title,value,ok,btn);
+ return card;
+}
+
+function render(){
+ var grid=document.getElementById('grid');
+ grid.replaceChildren();
+ var q=norm(query).trim();
+ var list=products.filter(function(p){
+  return (cat==='todos'||classify(p)===cat) && norm(getName(p)).indexOf(q)!==-1;
+ });
+ list.forEach(function(p){grid.appendChild(makeCard(p));});
+ if(!list.length){
+  var e=document.createElement('div');
+  e.className='empty';
+  e.textContent='Nenhum produto encontrado.';
+  grid.appendChild(e);
+ }
+}
+
+function showLoadError(msg){
+ document.getElementById('status').textContent='Não foi possível carregar o catálogo: '+msg;
+ var grid=document.getElementById('grid');
+ grid.replaceChildren();
+ var e=document.createElement('div');
+ e.className='empty';
+ e.textContent='Não foi possível carregar os produtos agora.';
+ var b=document.createElement('button');
+ b.textContent='Tentar de novo';
+ b.onclick=loadProducts;
+ e.appendChild(document.createElement('br'));
+ e.appendChild(b);
+ grid.appendChild(e);
+}
+
+async function loadProducts(){
+ var status=document.getElementById('status');
+ status.textContent='Carregando catálogo...';
+ var ctl=new AbortController();
+ var timer=setTimeout(function(){ctl.abort();},20000);
+ try{
+  var response=await fetch(API,{headers:{'Accept':'application/json'},signal:ctl.signal,cache:'no-store'});
+  clearTimeout(timer);
+  if(!response.ok)throw new Error('Erro HTTP '+response.status);
+  var data=await response.json();
+  products=Array.isArray(data)?data:
+   data.products || data.produtos || data.data ||
+   data.result || data.items || [];
+  if(!Array.isArray(products))products=[];
+  if(!products.length){
+   status.textContent='A API respondeu, mas não encontramos uma lista de produtos.';
+  }else{
+   status.textContent=products.length+' produtos disponíveis';
+   if(DEBUG){
+    status.textContent+=' | campos: '+Object.keys(products[0]).join(', ')+
+     ' | imagem: '+(getImage(products[0])||'nenhuma');
+   }
+  }
+  render();
+ }catch(error){
+  clearTimeout(timer);
+  showLoadError(error.name==='AbortError'?'o servidor demorou para responder':error.message);
+ }
+}
+
+var toastTimer;
+function toast(msg){
+ var t=document.getElementById('toast');
+ t.textContent=msg;
+ t.classList.add('show');
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(function(){t.classList.remove('show');},1800);
+}
+function addCart(index){
+ var p=products[index];
+ if(!p)return;
+ cart.push(p);
+ document.getElementById('count').textContent=cart.length;
+ toast(getName(p)+' adicionado!');
+}
+function showCart(){
+ if(!cart.length){
+  toast('Sua seleção está vazia.');
+  return;
+ }
+ alert('Produtos selecionados:\n'+cart.map(function(p){return getName(p);}).join('\n'));
+}
+
+document.getElementById('chips').addEventListener('click',function(e){
+ var b=e.target.closest('.chip');
+ if(!b)return;
+ cat=b.dataset.cat;
+ document.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('on',c===b);});
+ render();
+});
+document.getElementById('search').addEventListener('input',function(e){
+ query=e.target.value;
+ render();
+});
+
+loadProducts();
+</script>
+</body>
+</html>

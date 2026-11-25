@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090711">
+<title>Card Elite | Loja Digital</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--roxo:#923cff;--fundo:#090711;--card:#191323}
+body{background:var(--fundo);color:white;font-family:Arial,sans-serif}
+header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:#0b0812;position:sticky;top:0;z-index:10;border-bottom:1px solid #241934}
+.logo{font-size:24px;font-weight:900;letter-spacing:-1px}
+.logo span{color:var(--roxo)}
+nav{display:flex;gap:18px}
+nav a{color:#ddd;text-decoration:none;font-size:13px}
+nav a:hover{color:var(--roxo)}
+.hero{min-height:390px;padding:85px 6%;display:flex;align-items:center;background:linear-gradient(90deg,#090711 5%,#090711dd 45%,#09071133),linear-gradient(0deg,#090711,transparent 60%),radial-gradient(circle at 80% 30%,#6425a5,#211033 48%,#090711 80%)}
+.hero-content{max-width:570px}
+.tag{font-size:12px;letter-spacing:3px;color:#c69aff;font-weight:bold;margin-bottom:18px}
+.hero h1{font-size:clamp(38px,7vw,66px);line-height:1.02;margin-bottom:18px}
+.hero h1 span{color:var(--roxo)}
+.hero p{color:#c5bdce;line-height:1.7;font-size:15px;margin-bottom:25px}
+.hero-button{display:inline-block;background:var(--roxo);color:white;text-decoration:none;padding:14px 23px;border-radius:6px;font-weight:bold}
+main{padding:10px 5% 60px}
+.section{margin-top:30px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.section-title h2{font-size:21px}
+.section-title span{font-size:12px;color:#b77aff}
+.shelf{display:flex;gap:16px;overflow-x:auto;padding:5px 2px 20px;scrollbar-width:thin;scrollbar-color:#7133ad #191323}
+.product{flex:0 0 205px;background:var(--card);border:1px solid #30213e;border-radius:10px;overflow:hidden;transition:.2s}
+.product:hover{transform:translateY(-5px);border-color:var(--roxo);box-shadow:0 10px 25px #0008}
+.product-image{height:135px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#57248c,#29143c 65%,#191323);font-size:48px}
+.product-info{padding:14px}
+.product-name{font-weight:bold;font-size:15px;line-height:1.4;min-height:40px}
+.product-detail{font-size:12px;color:#aaa;margin-top:5px}
+.product-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:15px}
+.price{font-size:17px;color:#c99aff;font-weight:bold}
+.buy{border:0;background:var(--roxo);color:white;padding:9px 12px;border-radius:5px;font-weight:bold;cursor:pointer}
+.buy:hover{background:#a966ff}
+.status{font-size:13px;color:#aaa;padding:12px 0}
+footer{border-top:1px solid #30213e;padding:28px 5%;text-align:center;color:#898092;font-size:12px}
+@media(max-width:600px){
+header{padding:0 4%}
+.logo{font-size:20px}
+nav{gap:11px}
+nav a{font-size:12px}
+.hero{min-height:360px;padding:65px 6%}
+.product{flex-basis:175px}
+.product-image{height:115px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">CARD <span>ELITE</span></div>
+  <nav>
+    <a href="#">Início</a>
+    <a href="#catalogo">Produtos</a>
+    <a href="#contato">Contato</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="tag">BEM-VINDO À CARD ELITE</div>
+    <h1>O digital em outro <span>nível.</span></h1>
+    <p>Encontre seus produtos digitais favoritos em um só lugar. Escolha seu produto e aproveite uma experiência simples e rápida.</p>
+    <a class="hero-button" href="#catalogo">EXPLORAR PRODUTOS</a>
+  </div>
+</section>
+
+<main id="catalogo">
+  <section class="section">
+    <div class="section-title">
+      <h2>🔥 Todos os produtos</h2>
+      <span>CARD ELITE</span>
+    </div>
+    <div id="status" class="status">Carregando produtos...</div>
+    <div id="produtos" class="shelf"></div>
+  </section>
+</main>
+
+<footer id="contato">
+  <div class="logo">CARD <span>ELITE</span></div>
+  <p style="margin-top:10px">Sua experiência digital começa aqui.</p>
+  <p style="margin-top:15px">© 2026 Card Elite. Todos os direitos reservados.</p>
+</footer>
+
+<script>
+const lista=document.getElementById("produtos");
+const status=document.getElementById("status");
+
+function dinheiro(centavos){
+  return (Number(centavos||0)/100).toLocaleString("pt-BR",{
+    style:"currency",
+    currency:"BRL"
+  });
+}
+
+function criarProduto(produto){
+  const card=document.createElement("article");
+  card.className="product";
+
+  const imagem=document.createElement("div");
+  imagem.className="product-image";
+  imagem.textContent="♛";
+
+  const info=document.createElement("div");
+  info.className="product-info";
+
+  const nome=document.createElement("div");
+  nome.className="product-name";
+  nome.textContent=produto.nome||"Produto digital";
+
+  const detalhe=document.createElement("div");
+  detalhe.className="product-detail";
+  detalhe.textContent=produto.dias?produto.dias+" dias":"Produto digital";
+
+  const rodape=document.createElement("div");
+  rodape.className="product-bottom";
+
+  const preco=document.createElement("div");
+  preco.className="price";
+  preco.textContent=dinheiro(produto.preco_centavos);
+
+  const botao=document.createElement("button");
+  botao.className="buy";
+  botao.textContent="Comprar";
+
+  botao.addEventListener("click",()=>{
+    alert("O pagamento ainda não está integrado. Em breve!");
+  });
+
+  rodape.append(preco,botao);
+  info.append(nome,detalhe,rodape);
+  card.append(imagem,info);
+
+  return card;
+}
+
+async function carregarProdutos(){
+  try{
+    const resposta=await fetch("/api/produtos");
+    if(!resposta.ok) throw new Error("Erro na API");
+
+    const dados=await resposta.json();
+    const produtos=Array.isArray(dados)?dados:dados.produtos;
+
+    if(!Array.isArray(produtos)) throw new Error("Formato inválido");
+
+    const disponiveis=produtos.filter(p=>p.disponivel!==false);
+    lista.replaceChildren();
+
+    if(disponiveis.length===0){
+      status.textContent="Nenhum produto disponível no momento.";
+      return;
+    }
+
+    disponiveis.forEach(produto=>{
+      lista.appendChild(criarProduto(produto));
+    });
+
+    status.textContent="";
+  }catch(erro){
+    status.textContent="Não foi possível carregar os produtos. Verifique a API.";
+    console.error(erro);
+  }
+}
+
+carregarProdutos();
+</script>
+
+</body>
+</html>
